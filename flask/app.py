@@ -225,5 +225,5 @@ if __name__ == "__main__":
     cursor.close()
     conn.close()
 
-    app.run(debug=False)
+    app.run(debug=False, host='0.0.0.0')
 
