@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Usuário</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #8E2DE2;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background: #1E1E1E;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #2c2c2c;
+            color: #fff;
+            font-size: 1em;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        /* Botão flutuante "Voltar" */
+        .btn-flutuante-voltar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        .btn-flutuante-voltar:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cadastro de Usuário</h1>
+    <form method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Nome completo:</label>
+            <input style="max-width: 70%;" type="text" name="nome_completo" placeholder="Nome completo" required>
+        </div>
+
+        <div class="form-group">
+            <label>Apelido:</label>
+            <input style="max-width: 50%;" type="text" name="apelido" placeholder="Apelido">
+        </div>
+
+        <div class="form-group">
+            <label>Idade:</label>
+            <select style="max-width: 20%;" name="idade" required>
+                {% for i in range(1, 81) %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Telefone:</label>
+            <input style="max-width: 30%;" type="text" name="telefone" placeholder="(21) 90000-0000">
+        </div>
+
+        <div class="form-group">
+            <label>Mensalidade:</label>
+            <select style="max-width: 35%;" name="mensalidade" required>
+                <option value="Está em dia">Está em dia</option>
+                <option value="Não está em dia">Não está em dia</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Batizado:</label>
+            <select style="max-width: 35%;" name="batizado" required>
+                <option value="Pago">Pago</option>
+                <option value="Não pago">Não pago</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Graduação atual:</label>
+            <select style="max-width: 60%;" name="graduacao_atual" required>
+                {% for grupo, opcoes in graduacoes %}
+                <optgroup label="{{ grupo }}">
+                    {% for valor, nome in opcoes %}
+                    <option value="{{ nome }}">{{ nome }}</option> <!-- envia o nome da graduação -->
+                    {% endfor %}
+                </optgroup>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Graduação (tamanho):</label>
+            <input style="max-width: 50%;" type="text" name="graduacao_tamanho" placeholder="Graduação (tamanho)"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Camisa (tamanho):</label>
+            <input style="max-width: 50%;" type="text" name="camisa_tamanho" placeholder="Camisa (tamanho)">
+        </div>
+
+        <div class="form-group">
+            <label>Calça (tamanho):</label>
+            <input style="max-width: 50%;" type="text" name="calsa_tamanho" placeholder="Calça (tamanho)">
+        </div>
+
+        <div class="form-group">
+            <label>Foto:</label>
+            <input style="max-width: 80%;" type="file" name="foto" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>Núcleo:</label>
+            <select style="max-width: 60%;" name="nucleo" required>
+                {% set opcoes_nucleo = ['Sede', 'Lions Clube', 'C.E. Nova Piam', 'C.S. Padre Zegri', 'E.F. Espaço
+                Verde', 'Paciência'] %}
+                {% for opcao in opcoes_nucleo %}
+                <option value="{{ opcao }}">{{ opcao }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Responsável:</label>
+            <input style="max-width: 70%;" type="text" name="responsavel" placeholder="Nome do responsável">
+        </div>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <!-- Botão flutuante Voltar -->
+    <a href="{{ url_for('index') }}" class="btn-flutuante-voltar">Voltar</a>
+</body>
+
+</html>

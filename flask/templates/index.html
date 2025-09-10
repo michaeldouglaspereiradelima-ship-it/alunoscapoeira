@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Alunos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0 10px 80px 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #8E2DE2;
+            margin: 20px 0;
+        }
+
+        /* Card de login admin */
+        .login-card {
+            max-width: 300px;
+            background: #1E1E1E;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-card input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #2c2c2c;
+            color: #fff;
+        }
+
+        .login-card button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .login-card button:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        .aluno-card {
+            background: #1E1E1E;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .aluno-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .aluno-info {
+            flex: 1;
+        }
+
+        .aluno-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1em;
+            color: #8E2DE2;
+        }
+
+        .aluno-info p {
+            margin: 2px 0;
+            font-size: 0.9em;
+        }
+
+        .btn-editar {
+            padding: 8px 12px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-editar:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        .btn-flutuante {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1em;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        .btn-flutuante:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        .bola-total-alunos {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            cursor: default;
+            transition: 0.3s;
+        }
+
+        .bola-total-alunos:hover {
+            background: linear-gradient(to right, #8E2DE2, #4A00E0);
+        }
+
+        /* Botão flutuante de deslogar */
+        .btn-flutuante-deslogar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to right, #E52D8E, #FF6A00);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+
+        .btn-flutuante-deslogar:hover {
+            background: linear-gradient(to right, #FF6A00, #E52D8E);
+        }
+
+        @media (max-width: 600px) {
+            .aluno-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .aluno-card img {
+                margin-bottom: 10px;
+            }
+
+            .btn-editar {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if not session.get('admin_logado') %}
+    <!-- Card de login admin -->
+    <div class="login-card">
+        <h2>Senha do Admin</h2>
+        <form method="POST">
+            <input type="password" name="senha" placeholder="Digite a senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <p style="color:red;">{{ messages[0] }}</p>
+        {% endif %}
+        {% endwith %}
+    </div>
+    {% else %}
+    <!-- Lista de alunos -->
+    <h1>Lista de Alunos</h1>
+
+    {% for aluno in alunos %}
+    <div class="aluno-card">
+        {% if aluno.foto %}
+        <img src="{{ url_for('static', filename='fotos/' ~ aluno.foto) }}" alt="Foto do aluno">
+        {% else %}
+        <img src="{{ url_for('static', filename='fotos/default.png') }}" alt="Sem foto">
+        {% endif %}
+        <div class="aluno-info">
+            <h3>{{ aluno.nome_completo }}</h3>
+            <p>Apelido: {{ aluno.apelido or '-' }}</p>
+            <p>Idade: {{ aluno.idade }}</p>
+            <p>Telefone: {{ aluno.telefone or '-' }}</p>
+            <p>Mensalidade: {{ aluno.mensalidade }}</p>
+            <p>Batizado: {{ aluno.batizado }}</p>
+            <p>Graduação atual: {{ aluno.graduacao_atual }}</p>
+            <p>Tamanho da graduação: {{ aluno.graduacao_tamanho }}</p>
+            <p>Camisa: {{ aluno.camisa_tamanho or '-' }}, Calça: {{ aluno.calsa_tamanho or '-' }}</p>
+            <p>Núcleo: {{ aluno.nucleo }}</p>
+            <p>Responsável: {{ aluno.responsavel or '-' }}</p>
+        </div>
+        <a href="/editar/{{ aluno.id }}" class="btn-editar">Editar</a>
+    </div>
+    {% else %}
+    <p style="text-align:center; margin-top: 20px;">Nenhum aluno cadastrado ainda.</p>
+    {% endfor %}
+
+    <!-- Botão cadastrar -->
+    <a href="{{ url_for('cadastrar') }}" class="btn-flutuante">Cadastrar Aluno</a>
+    <!-- Bola total de alunos -->
+    <div class="bola-total-alunos">
+        Cadastrados: {{ alunos|length }}
+    </div>
+    {% endif %}
+    <!-- Botão flutuante de deslogar -->
+    {% if session.get('admin_logado') %}
+    <a href="{{ url_for('logout') }}" class="btn-flutuante-deslogar">Sair</a>
+    {% endif %}
+</body>
+
+</html>
