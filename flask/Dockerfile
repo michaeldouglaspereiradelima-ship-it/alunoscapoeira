@@ -25,7 +25,7 @@ EXPOSE 5000
 # Environment variables to define volumes inside the container
 # These paths serão mapeados para sua máquina host
 ENV DATABASE_PATH=/app/database.db
-ENV IMAGES_PATH=/app/static/img/images
+ENV IMAGES_PATH=/app/static/fotos
 
 # CMD para rodar a aplicação Flask
 CMD ["python", "app.py"]
