@@ -349,17 +349,16 @@ def ferramentas():
         flash("Acesso negado!", "danger")
         return redirect(url_for("index"))
 
+    # Garantir que a pasta de backups exista
+    os.makedirs(PASTA_BACKUPS, exist_ok=True)
+
     # Listar backups
-    backups = []
-    if os.path.exists(PASTA_BACKUPS):
-        backups = os.listdir(PASTA_BACKUPS)
-        backups.sort(reverse=True)  # do mais recente para o mais antigo
+    backups = sorted([f for f in os.listdir(PASTA_BACKUPS) if f.endswith('.zip')], reverse=True)
 
     return render_template(
         "ferramentas.html",
-        os=os,
-        PASTA_BACKUPS=PASTA_BACKUPS,
         backups=backups,
+        PASTA_BACKUPS=PASTA_BACKUPS,
         graduacoes=graduacoes
     )
 
