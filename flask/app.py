@@ -5,6 +5,7 @@ import uuid  # Para gerar nomes únicos
 from werkzeug.utils import secure_filename
 import shutil
 from datetime import datetime
+import time
 
 app = Flask(__name__)
 app.secret_key = "uma_chave_super_secreta"  # Necessário para flash e sessões
@@ -212,7 +213,7 @@ def backup():
     # Copiar pasta de fotos
     shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
 
-    # Criar zip final
+    # Criar zip usando make_archive
     backup_zip = f'backup_{timestamp}.zip'
     shutil.make_archive(f'backup_{timestamp}', 'zip', pasta_temp)
 
