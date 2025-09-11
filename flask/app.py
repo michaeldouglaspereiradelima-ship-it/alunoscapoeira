@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 import shutil
 from datetime import datetime
 import time
+import random
+import string
 
 app = Flask(__name__)
 app.secret_key = "uma_chave_super_secreta"  # Necessário para flash e sessões
@@ -198,13 +200,33 @@ def editar(aluno_id):
     conn.close()
     return render_template("editar.html", aluno=aluno, graduacoes=graduacoes)
 
-PASTA_FOTOS = 'static/fotos'  # pasta que será backupada
-BANCO_DADOS = 'database.db'   # banco de dados SQLite
+# Configurações
+PASTA_FOTOS = 'static/fotos'        # Pasta de fotos
+BANCO_DADOS = 'database.db'         # Banco de dados SQLite
+PASTA_BACKUPS = 'static/backups'    # Pasta onde os backups serão salvos
+
+# Função para corrigir timestamps inválidos
+def corrigir_timestamps(pasta):
+    for root, dirs, files in os.walk(pasta):
+        for f in files:
+            caminho = os.path.join(root, f)
+            os.utime(caminho, (time.time(), time.time()))
+
+# Função para gerar um nome aleatório curto
+def nome_aleatorio(n=4):
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=n))
 
 @app.route('/backup')
 def backup():
+    # Cria a pasta de backups se não existir
+    os.makedirs(PASTA_BACKUPS, exist_ok=True)
+
+    # Timestamp e identificador aleatório
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    pasta_temp = f'backup_temp_{timestamp}'
+    aleatorio = nome_aleatorio()
+    
+    # Pasta temporária para criar o backup
+    pasta_temp = f'backup_temp_{timestamp}_{aleatorio}'
     os.makedirs(pasta_temp, exist_ok=True)
 
     # Copiar banco de dados
@@ -213,9 +235,12 @@ def backup():
     # Copiar pasta de fotos
     shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
 
-    # Criar zip usando make_archive
-    backup_zip = f'backup_{timestamp}.zip'
-    shutil.make_archive(f'backup_{timestamp}', 'zip', pasta_temp)
+    # Corrigir timestamps para evitar erro do ZIP
+    corrigir_timestamps(pasta_temp)
+
+    # Nome final do zip dentro de static/backups
+    backup_zip = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
+    shutil.make_archive(backup_zip.replace('.zip', ''), 'zip', pasta_temp)
 
     # Remover pasta temporária
     shutil.rmtree(pasta_temp)
