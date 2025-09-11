@@ -261,10 +261,14 @@ def corrigir_timestamps(pasta):
 def nome_aleatorio(n=4):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=n))
 
+# Caminho da pasta de backups
+PASTA_BACKUPS = os.path.join(app.static_folder, "backups")
+os.makedirs(PASTA_BACKUPS, exist_ok=True)  # garante que a pasta exista
+
+# Rota de backup
 @app.route('/backup')
 def backup():
     try:
-        os.makedirs(PASTA_BACKUPS, exist_ok=True)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         aleatorio = nome_aleatorio()
         backup_zip_name = f'backup_{timestamp}_{aleatorio}.zip'
@@ -284,18 +288,23 @@ def backup():
                     arcname = os.path.relpath(caminho_completo, os.path.dirname(PASTA_FOTOS))
                     zipf.write(caminho_completo, arcname=os.path.join('fotos', arcname))
 
-        flash(f'Backup criado com sucesso!', 'success')
-        # Guardar o arquivo criado para download
-        flash(backup_zip_name, 'download')
+        flash('Backup criado com sucesso!', 'success')
+        flash(backup_zip_name, 'download')  # armazenar nome para download
 
     except Exception as e:
         flash(f'Erro ao criar backup: {e}', 'danger')
 
     return redirect(url_for('ferramentas'))
 
+
+# Rota para download do backup
 @app.route('/download_backup/<filename>')
 def download_backup(filename):
-    return send_from_directory(PASTA_BACKUPS, filename, as_attachment=True)
+    try:
+        return send_from_directory(PASTA_BACKUPS, filename, as_attachment=True)
+    except FileNotFoundError:
+        flash('Arquivo não encontrado!', 'danger')
+        return redirect(url_for('ferramentas'))
 
 
 # Rota limpar backups
@@ -349,18 +358,20 @@ def ferramentas():
         flash("Acesso negado!", "danger")
         return redirect(url_for("index"))
 
-    # Garantir que a pasta de backups exista
-    os.makedirs(PASTA_BACKUPS, exist_ok=True)
+    # Caminho da pasta de backups
+    pasta_backups = os.path.join(app.static_folder, "backups")
+    os.makedirs(pasta_backups, exist_ok=True)  # garante que a pasta exista
 
-    # Listar backups
-    backups = sorted([f for f in os.listdir(PASTA_BACKUPS) if f.endswith('.zip')], reverse=True)
+    # Listar arquivos .zip
+    backups = sorted([f for f in os.listdir(pasta_backups) if f.endswith('.zip')], reverse=True)
 
     return render_template(
         "ferramentas.html",
         backups=backups,
-        PASTA_BACKUPS=PASTA_BACKUPS,
+        pasta_backups=pasta_backups,
         graduacoes=graduacoes
     )
+
 
 
 if __name__ == "__main__":
