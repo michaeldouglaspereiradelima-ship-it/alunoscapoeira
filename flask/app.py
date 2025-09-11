@@ -24,6 +24,17 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 def conectar_banco():
     return sqlite3.connect("database.db")
 
+@app.template_filter('data_br')
+def data_br(value):
+    if not value:
+        return '-'
+    try:
+        # Converte string do banco (YYYY-MM-DD) para DD/MM/YYYY
+        dt = datetime.strptime(value, "%Y-%m-%d")
+        return dt.strftime("%d/%m/%Y")
+    except Exception:
+        return value
+
 # Rota para listar alunos com proteção por senha admin
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -204,6 +215,36 @@ def editar(aluno_id):
     conn.close()
     return render_template("editar.html", aluno=aluno, graduacoes=graduacoes)
 
+@app.route("/deletar/<int:aluno_id>", methods=["POST", "GET"])
+def deletar(aluno_id):
+    conn = conectar_banco()
+    conn.row_factory = sqlite3.Row  # <-- ADICIONE ESTA LINHA
+    cursor = conn.cursor()
+
+    # Buscar o aluno
+    cursor.execute("SELECT foto FROM usuarios WHERE id = ?", (aluno_id,))
+    aluno = cursor.fetchone()
+
+    if aluno:
+        # Deletar foto se existir e não for default
+        if aluno["foto"] and aluno["foto"] != "default.png":
+            caminho_foto = os.path.join(app.config["UPLOAD_FOLDER"], aluno["foto"])
+            if os.path.exists(caminho_foto):
+                os.remove(caminho_foto)
+
+        # Deletar do banco
+        cursor.execute("DELETE FROM usuarios WHERE id = ?", (aluno_id,))
+        conn.commit()
+        flash("Aluno deletado com sucesso!", "success")
+    else:
+        flash("Aluno não encontrado!", "danger")
+
+    cursor.close()
+    conn.close()
+    return redirect(url_for("index"))
+
+
+
 PASTA_FOTOS = os.path.abspath('static/fotos')
 BANCO_DADOS = os.path.abspath('database.db')
 PASTA_BACKUPS = os.path.abspath('static/backups')
@@ -327,7 +368,8 @@ if __name__ == "__main__":
             calsa_tamanho TEXT,
             foto TEXT,
             nucleo TEXT NOT NULL,
-            responsavel TEXT
+            responsavel TEXT,
+            iniciou_no_dia TEXT
         )
     """)
 
