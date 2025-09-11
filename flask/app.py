@@ -252,7 +252,4 @@ if __name__ == "__main__":
         # Retornar arquivo para download
         return send_file(backup_zip, as_attachment=True)
 
-    
-
-if __name__ == "__main__":
     app.run(debug=False, host='0.0.0.0')
