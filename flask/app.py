@@ -8,6 +8,7 @@ from datetime import datetime
 import time
 import random
 import string
+from zipfile import ZipFile, ZIP_DEFLATED
 
 app = Flask(__name__)
 app.secret_key = "uma_chave_super_secreta"  # Necessário para flash e sessões
@@ -223,26 +224,24 @@ def backup():
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         aleatorio = nome_aleatorio()
-        pasta_temp = os.path.join(PASTA_BACKUPS, f'temp_{timestamp}_{aleatorio}')
-        os.makedirs(pasta_temp, exist_ok=True)
+        backup_zip_path = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
 
-        # Copiar banco de dados
-        shutil.copy2(BANCO_DADOS, pasta_temp)
+        # Criar zip manualmente
+        with ZipFile(backup_zip_path, 'w', ZIP_DEFLATED) as zipf:
+            # Adicionar banco de dados
+            corrigir_timestamps(os.path.dirname(BANCO_DADOS))
+            zipf.write(BANCO_DADOS, arcname=os.path.basename(BANCO_DADOS))
 
-        # Copiar fotos
-        shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
+            # Adicionar fotos
+            corrigir_timestamps(PASTA_FOTOS)
+            for root, dirs, files in os.walk(PASTA_FOTOS):
+                for f in files:
+                    caminho_completo = os.path.join(root, f)
+                    # Colocar dentro do zip mantendo a estrutura relativa
+                    arcname = os.path.relpath(caminho_completo, os.path.dirname(PASTA_FOTOS))
+                    zipf.write(caminho_completo, arcname=os.path.join('fotos', arcname))
 
-        # Corrigir timestamps
-        corrigir_timestamps(pasta_temp)
-
-        # Criar zip
-        backup_zip = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
-        shutil.make_archive(backup_zip.replace('.zip', ''), 'zip', pasta_temp)
-
-        # Remover pasta temporária
-        shutil.rmtree(pasta_temp)
-
-        return send_file(backup_zip, as_attachment=True)
+        return send_file(backup_zip_path, as_attachment=True)
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
 
