@@ -343,10 +343,26 @@ def resetar_banco():
 
     return redirect(url_for('ferramentas'))
 
-# Rota ferramentas
-@app.route('/ferramentas')
+@app.route("/ferramentas")
 def ferramentas():
-    return render_template('ferramentas.html', os=os, PASTA_BACKUPS=PASTA_BACKUPS)
+    if not session.get("admin_logado"):
+        flash("Acesso negado!", "danger")
+        return redirect(url_for("index"))
+
+    # Listar backups
+    backups = []
+    if os.path.exists(PASTA_BACKUPS):
+        backups = os.listdir(PASTA_BACKUPS)
+        backups.sort(reverse=True)  # do mais recente para o mais antigo
+
+    return render_template(
+        "ferramentas.html",
+        os=os,
+        PASTA_BACKUPS=PASTA_BACKUPS,
+        backups=backups,
+        graduacoes=graduacoes
+    )
+
 
 if __name__ == "__main__":
     conn = conectar_banco()
