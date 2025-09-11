@@ -111,6 +111,7 @@ def cadastrar():
         foto = request.files.get("foto")
         nucleo = request.form.get("nucleo")
         responsavel = request.form.get("responsavel")
+        iniciou_no_dia = request.form.get("iniciou_no_dia")
 
         foto_filename = None
         if foto:
@@ -125,12 +126,12 @@ def cadastrar():
             INSERT INTO usuarios (
                 nome_completo, apelido, idade, telefone, mensalidade, batizado,
                 graduacao_atual, graduacao_tamanho, camisa_tamanho, calsa_tamanho,
-                foto, nucleo, responsavel
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                foto, nucleo, responsavel, iniciou_no_dia
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             nome_completo, apelido, idade, telefone, mensalidade, batizado,
             graduacao_atual, graduacao_tamanho, camisa_tamanho, calsa_tamanho,
-            foto_filename, nucleo, responsavel
+            foto_filename, nucleo, responsavel, iniciou_no_dia
         ))
         conn.commit()
         cursor.close()
@@ -165,6 +166,7 @@ def editar(aluno_id):
         foto = request.files.get("foto")
         nucleo = request.form.get("nucleo")
         responsavel = request.form.get("responsavel")
+        iniciou_no_dia = request.form.get("iniciou_no_dia")
 
         foto_filename = aluno["foto"]  # manter a foto atual se não enviar nova
         if foto:
@@ -184,14 +186,15 @@ def editar(aluno_id):
             UPDATE usuarios SET 
                 nome_completo=?, apelido=?, idade=?, telefone=?, mensalidade=?, batizado=?,
                 graduacao_atual=?, graduacao_tamanho=?, camisa_tamanho=?, calsa_tamanho=?,
-                nucleo=?, responsavel=?, foto=?
+                nucleo=?, responsavel=?, foto=?, iniciou_no_dia=?
             WHERE id=?
         """, (
             nome_completo, apelido, idade, telefone, mensalidade, batizado,
             graduacao_atual, graduacao_tamanho, camisa_tamanho, calsa_tamanho,
-            nucleo, responsavel, foto_filename,
+            nucleo, responsavel, foto_filename, iniciou_no_dia,  # <- corrigido
             aluno_id
         ))
+
         conn.commit()
         cursor.close()
         conn.close()

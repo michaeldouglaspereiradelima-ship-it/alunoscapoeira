@@ -160,7 +160,8 @@
 
         <div class="form-group">
             <label>Graduação (tamanho):</label>
-            <input style="max-width: 50%;" type="text" name="graduacao_tamanho" value="{{ aluno.graduacao_tamanho }}" required>
+            <input style="max-width: 50%;" type="text" name="graduacao_tamanho" value="{{ aluno.graduacao_tamanho }}"
+                required>
         </div>
 
         <div class="form-group">
@@ -192,6 +193,11 @@
         <div class="form-group">
             <label>Responsável:</label>
             <input style="max-width: 70%;" type="text" name="responsavel" value="{{ aluno.responsavel }}">
+        </div>
+
+        <div class="form-group">
+            <label>Iniciou no dia:</label>
+            <input style="max-width: 70%;" type="date" name="iniciou_no_dia" value="{{ aluno.iniciou_no_dia }}">
         </div>
 
         <button type="submit">Salvar Alterações</button>
