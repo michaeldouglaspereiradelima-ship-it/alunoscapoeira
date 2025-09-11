@@ -353,7 +353,7 @@ def resetar_banco():
     return redirect(url_for('ferramentas'))
 
 # Caminho da pasta de backups
-PASTA_BACKUPS = os.path.join(app.static_folder, "backups")
+PASTA_BACKUPS = os.path.join("static", "backups")
 os.makedirs(PASTA_BACKUPS, exist_ok=True)  # garante que a pasta exista
 
 @app.route("/ferramentas")
