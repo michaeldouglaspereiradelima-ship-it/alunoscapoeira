@@ -352,7 +352,7 @@ def resetar_banco():
 
     return redirect(url_for('ferramentas'))
 
-@app.route("/ferramentas")
+@app.route("/ferramentas", methods=['POST', 'GET'])
 def ferramentas():
     if not session.get("admin_logado"):
         flash("Acesso negado!", "danger")
