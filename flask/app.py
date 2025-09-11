@@ -197,7 +197,30 @@ def editar(aluno_id):
     conn.close()
     return render_template("editar.html", aluno=aluno, graduacoes=graduacoes)
 
+PASTA_FOTOS = 'static/fotos'  # pasta que será backupada
+BANCO_DADOS = 'database.db'   # banco de dados SQLite
 
+@app.route('/backup')
+def backup():
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    pasta_temp = f'backup_temp_{timestamp}'
+    os.makedirs(pasta_temp, exist_ok=True)
+
+    # Copiar banco de dados
+    shutil.copy2(BANCO_DADOS, pasta_temp)
+
+    # Copiar pasta de fotos
+    shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
+
+    # Criar zip final
+    backup_zip = f'backup_{timestamp}.zip'
+    shutil.make_archive(f'backup_{timestamp}', 'zip', pasta_temp)
+
+    # Remover pasta temporária
+    shutil.rmtree(pasta_temp)
+
+    # Retornar arquivo para download
+    return send_file(backup_zip, as_attachment=True)
 
 if __name__ == "__main__":
     conn = conectar_banco()
@@ -226,30 +249,5 @@ if __name__ == "__main__":
     conn.commit()
     cursor.close()
     conn.close()
-
-    PASTA_FOTOS = 'static/fotos'  # pasta que será backupada
-    BANCO_DADOS = 'database.db'   # banco de dados SQLite
-
-    @app.route('/backup')
-    def backup():
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        pasta_temp = f'backup_temp_{timestamp}'
-        os.makedirs(pasta_temp, exist_ok=True)
-
-        # Copiar banco de dados
-        shutil.copy2(BANCO_DADOS, pasta_temp)
-
-        # Copiar pasta de fotos
-        shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
-
-        # Criar zip final
-        backup_zip = f'backup_{timestamp}.zip'
-        shutil.make_archive(f'backup_{timestamp}', 'zip', pasta_temp)
-
-        # Remover pasta temporária
-        shutil.rmtree(pasta_temp)
-
-        # Retornar arquivo para download
-        return send_file(backup_zip, as_attachment=True)
 
     app.run(debug=False, host='0.0.0.0')
