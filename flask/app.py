@@ -352,23 +352,25 @@ def resetar_banco():
 
     return redirect(url_for('ferramentas'))
 
-@app.route("/ferramentas", methods=['POST', 'GET'])
+# Caminho da pasta de backups
+PASTA_BACKUPS = os.path.join(app.static_folder, "backups")
+os.makedirs(PASTA_BACKUPS, exist_ok=True)  # garante que a pasta exista
+
+@app.route("/ferramentas")
 def ferramentas():
     if not session.get("admin_logado"):
         flash("Acesso negado!", "danger")
         return redirect(url_for("index"))
 
-    # Caminho da pasta de backups
-    pasta_backups = os.path.join(app.static_folder, "backups")
-    os.makedirs(pasta_backups, exist_ok=True)  # garante que a pasta exista
-
-    # Listar arquivos .zip
-    backups = sorted([f for f in os.listdir(pasta_backups) if f.endswith('.zip')], reverse=True)
+    # Listar backups apenas se a pasta existir
+    backups = []
+    if os.path.exists(PASTA_BACKUPS):
+        backups = [f for f in os.listdir(PASTA_BACKUPS) if f.endswith(".zip")]
+        backups.sort(reverse=True)  # do mais recente para o mais antigo
 
     return render_template(
         "ferramentas.html",
         backups=backups,
-        pasta_backups=pasta_backups,
         graduacoes=graduacoes
     )
 
