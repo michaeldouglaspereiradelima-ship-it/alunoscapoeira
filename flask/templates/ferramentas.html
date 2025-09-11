@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ferramentas de Administração</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        form, a {
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: #fff;
+            transition: 0.3s;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        a button {
+            text-decoration: none;
+        }
+        .flash {
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            width: 400px;
+            text-align: center;
+            word-break: break-word;
+        }
+        .success { background-color: #4CAF50; color: white; }
+        .danger { background-color: #f44336; color: white; }
+        .backup-link {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+        .backup-link:hover {
+            color: #ccc;
+        }
+        .backup-list {
+            margin-top: 20px;
+        }
+        .backup-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ferramentas de Administração</h1>
+
+    <!-- Mensagens flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          {% if category == 'download' %}
+            <div class="flash success">
+                <a class="backup-link" href="{{ url_for('download_backup', filename=message) }}">Baixar Backup: {{ message }}</a>
+            </div>
+          {% else %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Botão Backup -->
+    <a href="{{ url_for('backup') }}"><button>Fazer Backup</button></a>
+
+    <!-- Botão Limpar Backups -->
+    <form action="{{ url_for('limpar_backups') }}" method="post">
+        <button type="submit">Limpar Backups</button>
+    </form>
+
+    <!-- Botão Resetar Banco -->
+    <form action="{{ url_for('resetar_banco') }}" method="post">
+        <button type="submit">Resetar Banco e Fotos</button>
+    </form>
+
+    <!-- Lista de backups existentes -->
+    <div class="backup-list">
+        <h2>Backups Existentes:</h2>
+        <ul>
+            {% for arquivo in os.listdir(PASTA_BACKUPS) if arquivo.endswith('.zip') %}
+                <li>
+                    <a class="backup-link" href="{{ url_for('download_backup', filename=arquivo) }}">{{ arquivo }}</a>
+                </li>
+            {% else %}
+                <li>Nenhum backup disponível.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Botão voltar para página principal -->
+    <a href="{{ url_for('index') }}"><button>Voltar para Página Principal</button></a>
+
+</body>
+</html>

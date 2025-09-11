@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify, send_from_directory
 import sqlite3
 import os
 import uuid  # Para gerar nomes únicos
@@ -221,29 +221,88 @@ def nome_aleatorio(n=4):
 def backup():
     try:
         os.makedirs(PASTA_BACKUPS, exist_ok=True)
-
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         aleatorio = nome_aleatorio()
-        backup_zip_path = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
+        backup_zip_name = f'backup_{timestamp}_{aleatorio}.zip'
+        backup_zip_path = os.path.join(PASTA_BACKUPS, backup_zip_name)
 
         # Criar zip manualmente
         with ZipFile(backup_zip_path, 'w', ZIP_DEFLATED) as zipf:
-            # Adicionar banco de dados
+            # Banco de dados
             corrigir_timestamps(os.path.dirname(BANCO_DADOS))
             zipf.write(BANCO_DADOS, arcname=os.path.basename(BANCO_DADOS))
 
-            # Adicionar fotos
+            # Fotos
             corrigir_timestamps(PASTA_FOTOS)
             for root, dirs, files in os.walk(PASTA_FOTOS):
                 for f in files:
                     caminho_completo = os.path.join(root, f)
-                    # Colocar dentro do zip mantendo a estrutura relativa
                     arcname = os.path.relpath(caminho_completo, os.path.dirname(PASTA_FOTOS))
                     zipf.write(caminho_completo, arcname=os.path.join('fotos', arcname))
 
-        return send_file(backup_zip_path, as_attachment=True)
+        flash(f'Backup criado com sucesso!', 'success')
+        # Guardar o arquivo criado para download
+        flash(backup_zip_name, 'download')
+
     except Exception as e:
-        return jsonify({'erro': str(e)}), 500
+        flash(f'Erro ao criar backup: {e}', 'danger')
+
+    return redirect(url_for('ferramentas'))
+
+@app.route('/download_backup/<filename>')
+def download_backup(filename):
+    return send_from_directory(PASTA_BACKUPS, filename, as_attachment=True)
+
+
+# Rota limpar backups
+@app.route('/limpar_backups', methods=['POST'])
+def limpar_backups():
+    try:
+        if os.path.exists(PASTA_BACKUPS):
+            for arquivo in os.listdir(PASTA_BACKUPS):
+                caminho = os.path.join(PASTA_BACKUPS, arquivo)
+                if os.path.isfile(caminho) or os.path.islink(caminho):
+                    os.remove(caminho)
+                elif os.path.isdir(caminho):
+                    shutil.rmtree(caminho)
+        flash('Todos os backups foram removidos com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao limpar backups: {e}', 'danger')
+    return redirect(url_for('ferramentas'))
+
+# Rota resetar banco
+@app.route('/resetar_banco', methods=['POST'])
+def resetar_banco():
+    try:
+        # Limpar tabelas do banco
+        conn = sqlite3.connect(BANCO_DADOS)
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tabelas = cursor.fetchall()
+        for tabela in tabelas:
+            nome_tabela = tabela[0]
+            if nome_tabela != 'sqlite_sequence':
+                cursor.execute(f"DELETE FROM {nome_tabela};")
+        conn.commit()
+        conn.close()
+
+        # Deletar imagens da pasta fotos
+        if os.path.exists(PASTA_FOTOS):
+            for arquivo in os.listdir(PASTA_FOTOS):
+                caminho = os.path.join(PASTA_FOTOS, arquivo)
+                if os.path.isfile(caminho):
+                    os.remove(caminho)
+
+        flash('Banco resetado e fotos removidas com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao resetar banco: {e}', 'danger')
+
+    return redirect(url_for('ferramentas'))
+
+# Rota ferramentas
+@app.route('/ferramentas')
+def ferramentas():
+    return render_template('ferramentas.html', os=os, PASTA_BACKUPS=PASTA_BACKUPS)
 
 if __name__ == "__main__":
     conn = conectar_banco()
