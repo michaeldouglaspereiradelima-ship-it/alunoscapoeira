@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify
 import sqlite3
 import os
 import uuid  # Para gerar nomes únicos
@@ -200,53 +200,51 @@ def editar(aluno_id):
     conn.close()
     return render_template("editar.html", aluno=aluno, graduacoes=graduacoes)
 
-# Configurações
-PASTA_FOTOS = 'static/fotos'        # Pasta de fotos
-BANCO_DADOS = 'database.db'         # Banco de dados SQLite
-PASTA_BACKUPS = 'static/backups'    # Pasta onde os backups serão salvos
+PASTA_FOTOS = os.path.abspath('static/fotos')
+BANCO_DADOS = os.path.abspath('database.db')
+PASTA_BACKUPS = os.path.abspath('static/backups')
 
-# Função para corrigir timestamps inválidos
 def corrigir_timestamps(pasta):
     for root, dirs, files in os.walk(pasta):
         for f in files:
             caminho = os.path.join(root, f)
-            os.utime(caminho, (time.time(), time.time()))
+            try:
+                os.utime(caminho, (time.time(), time.time()))
+            except Exception as e:
+                print(f"Erro ao corrigir timestamp de {caminho}: {e}")
 
-# Função para gerar um nome aleatório curto
 def nome_aleatorio(n=4):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=n))
 
 @app.route('/backup')
 def backup():
-    # Cria a pasta de backups se não existir
-    os.makedirs(PASTA_BACKUPS, exist_ok=True)
+    try:
+        os.makedirs(PASTA_BACKUPS, exist_ok=True)
 
-    # Timestamp e identificador aleatório
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    aleatorio = nome_aleatorio()
-    
-    # Pasta temporária para criar o backup
-    pasta_temp = f'backup_temp_{timestamp}_{aleatorio}'
-    os.makedirs(pasta_temp, exist_ok=True)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        aleatorio = nome_aleatorio()
+        pasta_temp = os.path.join(PASTA_BACKUPS, f'temp_{timestamp}_{aleatorio}')
+        os.makedirs(pasta_temp, exist_ok=True)
 
-    # Copiar banco de dados
-    shutil.copy2(BANCO_DADOS, pasta_temp)
+        # Copiar banco de dados
+        shutil.copy2(BANCO_DADOS, pasta_temp)
 
-    # Copiar pasta de fotos
-    shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
+        # Copiar fotos
+        shutil.copytree(PASTA_FOTOS, os.path.join(pasta_temp, 'fotos'))
 
-    # Corrigir timestamps para evitar erro do ZIP
-    corrigir_timestamps(pasta_temp)
+        # Corrigir timestamps
+        corrigir_timestamps(pasta_temp)
 
-    # Nome final do zip dentro de static/backups
-    backup_zip = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
-    shutil.make_archive(backup_zip.replace('.zip', ''), 'zip', pasta_temp)
+        # Criar zip
+        backup_zip = os.path.join(PASTA_BACKUPS, f'backup_{timestamp}_{aleatorio}.zip')
+        shutil.make_archive(backup_zip.replace('.zip', ''), 'zip', pasta_temp)
 
-    # Remover pasta temporária
-    shutil.rmtree(pasta_temp)
+        # Remover pasta temporária
+        shutil.rmtree(pasta_temp)
 
-    # Retornar arquivo para download
-    return send_file(backup_zip, as_attachment=True)
+        return send_file(backup_zip, as_attachment=True)
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
 
 if __name__ == "__main__":
     conn = conectar_banco()
