@@ -95,6 +95,48 @@
                 padding: 15px;
             }
         }
+
+        @media (max-width: 405px) {
+            .nome-completo {
+                max-width: 92% !important;
+            }
+
+            .apelido {
+                max-width: 70% !important;
+            }
+
+            .idade {
+                max-width: 30% !important;
+            }
+
+            .telefone {
+                max-width: 50% !important;
+            }
+
+            .mensalidade {
+                max-width: 60% !important;
+            }
+
+            .batizado {
+                max-width: 60% !important;
+            }
+
+            .graduacao-atual {
+                max-width: 100% !important;
+            }
+            .camisa {
+                max-width: 70% !important;
+            }
+            .calca {
+                max-width: 80% !important;
+            }
+            .foto {
+                max-width: 92% !important;
+            }
+            .responsavel {
+                max-width: 92% !important;
+            }
+        }
     </style>
 </head>
 
@@ -104,17 +146,18 @@
 
         <div class="form-group">
             <label>Nome completo:</label>
-            <input style="max-width: 70%;" type="text" name="nome_completo" placeholder="Nome completo" required>
+            <input class="nome-completo" style="max-width: 70%;" type="text" name="nome_completo"
+                placeholder="Nome completo" required>
         </div>
 
         <div class="form-group">
             <label>Apelido:</label>
-            <input style="max-width: 50%;" type="text" name="apelido" placeholder="Apelido">
+            <input class="apelido" style="max-width: 50%;" type="text" name="apelido" placeholder="Apelido">
         </div>
 
         <div class="form-group">
             <label>Idade:</label>
-            <select style="max-width: 20%;" name="idade" required>
+            <select class="idade" style="max-width: 20%;" name="idade" required>
                 {% for i in range(1, 81) %}
                 <option value="{{ i }}">{{ i }}</option>
                 {% endfor %}
@@ -123,12 +166,13 @@
 
         <div class="form-group">
             <label>Telefone:</label>
-            <input style="max-width: 30%;" type="text" name="telefone" placeholder="(21) 90000-0000">
+            <input class="telefone" style="max-width: 30%;" type="text" name="telefone" placeholder="(21) 90000-0000"
+                maxlength="15">
         </div>
 
         <div class="form-group">
             <label>Mensalidade:</label>
-            <select style="max-width: 35%;" name="mensalidade" required>
+            <select class="mensalidade" style="max-width: 35%;" name="mensalidade" required>
                 <option value="Está em dia">Está em dia</option>
                 <option value="Não está em dia">Não está em dia</option>
             </select>
@@ -136,7 +180,7 @@
 
         <div class="form-group">
             <label>Batizado:</label>
-            <select style="max-width: 35%;" name="batizado" required>
+            <select class="batizado" style="max-width: 35%;" name="batizado" required>
                 <option value="Pago">Pago</option>
                 <option value="Não pago">Não pago</option>
             </select>
@@ -144,7 +188,7 @@
 
         <div class="form-group">
             <label>Graduação atual:</label>
-            <select style="max-width: 60%;" name="graduacao_atual" required>
+            <select class="graduacao-atual" style="max-width: 60%;" name="graduacao_atual" required>
                 {% for grupo, opcoes in graduacoes %}
                 <optgroup label="{{ grupo }}">
                     {% for valor, nome in opcoes %}
@@ -162,18 +206,45 @@
         </div>
 
         <div class="form-group">
-            <label>Camisa (tamanho):</label>
-            <input style="max-width: 50%;" type="text" name="camisa_tamanho" placeholder="Camisa (tamanho)">
+            <label for="camisa_tamanho">Camisa (tamanho):</label>
+            <select class="camisa" style="max-width: 50%;" name="camisa_tamanho" id="camisa_tamanho" class="form-control">
+                <option value="" selected disabled>Selecione o tamanho</option>
+                <optgroup label="Infantil">
+                    <option value="4">4 anos</option>
+                    <option value="6">6 anos</option>
+                    <option value="8">8 anos</option>
+                    <option value="10">10 anos</option>
+                    <option value="12">12 anos</option>
+                </optgroup>
+                <optgroup label="Adulto">
+                    <option value="PP">PP: Extra Pequeno</option>
+                    <option value="P">P: Pequeno</option>
+                    <option value="M">M: Médio</option>
+                    <option value="G">G: Grande</option>
+                    <option value="GG">GG: Extra Grande</option>
+                </optgroup>
+            </select>
         </div>
 
         <div class="form-group">
             <label>Calça (tamanho):</label>
-            <input style="max-width: 50%;" type="text" name="calsa_tamanho" placeholder="Calça (tamanho)">
+            <select class="calca" style="max-width: 50%;" name="calsa_tamanho" class="form-control">
+                <option value="">Selecione o tamanho</option>
+                <option value="34-PP">34 (PP ou até menor)</option>
+                <option value="36-P">36 (P)</option>
+                <option value="38-P/M">38 (entre P e M)</option>
+                <option value="40-M">40 (M)</option>
+                <option value="42-M/G">42 (entre M e G)</option>
+                <option value="44-G">44 (G)</option>
+                <option value="46-GG">46 (GG)</option>
+                <option value="48-GG/Plus">48 (entre GG e Plus Size)</option>
+            </select>
         </div>
+
 
         <div class="form-group">
             <label>Foto:</label>
-            <input style="max-width: 80%;" type="file" name="foto" accept="image/*">
+            <input class="foto" style="max-width: 80%;" type="file" name="foto" accept="image/*">
         </div>
 
         <div class="form-group">
@@ -189,7 +260,7 @@
 
         <div class="form-group">
             <label>Responsável:</label>
-            <input style="max-width: 70%;" type="text" name="responsavel" placeholder="Nome do responsável">
+            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel" placeholder="Nome do responsável">
         </div>
 
         <div class="form-group">
@@ -204,6 +275,17 @@
 
     <!-- Botão flutuante Voltar -->
     <a href="{{ url_for('index') }}" class="btn-flutuante-voltar">Voltar</a>
+
+    <script>
+        document.querySelectorAll('.telefone').forEach(function (input) {
+            input.addEventListener('input', function (e) {
+                let valor = e.target.value.replace(/\D/g, ''); // só números
+                valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2'); // (21) ...
+                valor = valor.replace(/(\d{5})(\d{4})$/, '$1-$2'); // 90000-0000
+                e.target.value = valor;
+            });
+        });
+    </script>
 </body>
 
 </html>

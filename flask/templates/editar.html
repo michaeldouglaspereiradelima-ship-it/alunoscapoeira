@@ -95,6 +95,47 @@
                 padding: 15px;
             }
         }
+        @media (max-width: 405px) {
+            .nome-completo {
+                max-width: 92% !important;
+            }
+
+            .apelido {
+                max-width: 70% !important;
+            }
+
+            .idade {
+                max-width: 30% !important;
+            }
+
+            .telefone {
+                max-width: 50% !important;
+            }
+
+            .mensalidade {
+                max-width: 60% !important;
+            }
+
+            .batizado {
+                max-width: 60% !important;
+            }
+
+            .graduacao-atual {
+                max-width: 100% !important;
+            }
+            .camisa {
+                max-width: 70% !important;
+            }
+            .calca {
+                max-width: 80% !important;
+            }
+            .foto {
+                max-width: 92% !important;
+            }
+            .responsavel {
+                max-width: 92% !important;
+            }
+        }
     </style>
 </head>
 
@@ -104,17 +145,17 @@
 
         <div class="form-group">
             <label>Nome completo:</label>
-            <input style="max-width: 70%;" type="text" name="nome_completo" value="{{ aluno.nome_completo }}" required>
+            <input class="nome-completo" style="max-width: 70%;" type="text" name="nome_completo" value="{{ aluno.nome_completo }}" required>
         </div>
 
         <div class="form-group">
             <label>Apelido:</label>
-            <input style="max-width: 50%;" type="text" name="apelido" value="{{ aluno.apelido }}">
+            <input class="apelido" style="max-width: 50%;" type="text" name="apelido" value="{{ aluno.apelido }}">
         </div>
 
         <div class="form-group">
             <label>Idade:</label>
-            <select style="max-width: 20%;" name="idade" required>
+            <select class="idade" style="max-width: 20%;" name="idade" required>
                 {% for i in range(1, 81) %}
                 <option value="{{ i }}" {% if aluno.idade|string==i|string %}selected{% endif %}>{{ i }}</option>
                 {% endfor %}
@@ -123,12 +164,12 @@
 
         <div class="form-group">
             <label>Telefone:</label>
-            <input style="max-width: 30%;" type="text" name="telefone" value="{{ aluno.telefone }}">
+            <input class="telefone" style="max-width: 30%;" type="text" name="telefone" value="{{ aluno.telefone }}">
         </div>
 
         <div class="form-group">
             <label>Mensalidade:</label>
-            <select style="max-width: 35%;" name="mensalidade" required>
+            <select class="mensalidade" style="max-width: 35%;" name="mensalidade" required>
                 <option value="Está em dia" {% if aluno.mensalidade=="Está em dia" %}selected{% endif %}>Está em dia
                 </option>
                 <option value="Não está em dia" {% if aluno.mensalidade=="Não está em dia" %}selected{% endif %}>Não
@@ -138,7 +179,7 @@
 
         <div class="form-group">
             <label>Batizado:</label>
-            <select style="max-width: 35%;" name="batizado" required>
+            <select class="batizado" style="max-width: 35%;" name="batizado" required>
                 <option value="Pago" {% if aluno.batizado=="Pago" %}selected{% endif %}>Pago</option>
                 <option value="Não pago" {% if aluno.batizado=="Não pago" %}selected{% endif %}>Não pago</option>
             </select>
@@ -146,7 +187,7 @@
 
         <div class="form-group">
             <label>Graduação atual:</label>
-            <select style="max-width: 60%;" name="graduacao_atual" required>
+            <select class="graduacao-atual" style="max-width: 60%;" name="graduacao_atual" required>
                 {% for grupo, opcoes in graduacoes %}
                 <optgroup label="{{ grupo }}">
                     {% for valor, nome in opcoes %}
@@ -166,17 +207,17 @@
 
         <div class="form-group">
             <label>Camisa (tamanho):</label>
-            <input style="max-width: 50%;" type="text" name="camisa_tamanho" value="{{ aluno.camisa_tamanho }}">
+            <input class="camisa" style="max-width: 50%;" type="text" name="camisa_tamanho" value="{{ aluno.camisa_tamanho }}">
         </div>
 
         <div class="form-group">
             <label>Calça (tamanho):</label>
-            <input style="max-width: 50%;" type="text" name="calsa_tamanho" value="{{ aluno.calsa_tamanho }}">
+            <input class="calca" style="max-width: 50%;" type="text" name="calsa_tamanho" value="{{ aluno.calsa_tamanho }}">
         </div>
 
         <div class="form-group">
             <label>Foto:</label>
-            <input style="max-width: 80%;" type="file" name="foto" accept="image/*">
+            <input class="foto" style="max-width: 80%;" type="file" name="foto" accept="image/*">
         </div>
 
         <div class="form-group">
@@ -192,7 +233,7 @@
 
         <div class="form-group">
             <label>Responsável:</label>
-            <input style="max-width: 70%;" type="text" name="responsavel" value="{{ aluno.responsavel }}">
+            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel" value="{{ aluno.responsavel }}">
         </div>
 
         <div class="form-group">
