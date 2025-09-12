@@ -65,6 +65,7 @@
             cursor: pointer;
             transition: 0.3s;
             margin-top: 10px;
+            outline: none;
         }
 
         button:hover {
@@ -84,6 +85,7 @@
             text-decoration: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             transition: 0.3s;
+            outline: none;
         }
 
         .btn-flutuante-voltar:hover {
@@ -95,6 +97,7 @@
                 padding: 15px;
             }
         }
+
         @media (max-width: 405px) {
             .nome-completo {
                 max-width: 92% !important;
@@ -123,15 +126,19 @@
             .graduacao-atual {
                 max-width: 100% !important;
             }
+
             .camisa {
                 max-width: 70% !important;
             }
+
             .calca {
                 max-width: 80% !important;
             }
+
             .foto {
                 max-width: 92% !important;
             }
+
             .responsavel {
                 max-width: 92% !important;
             }
@@ -145,7 +152,8 @@
 
         <div class="form-group">
             <label>Nome completo:</label>
-            <input class="nome-completo" style="max-width: 70%;" type="text" name="nome_completo" value="{{ aluno.nome_completo }}" required>
+            <input class="nome-completo" style="max-width: 70%;" type="text" name="nome_completo"
+                value="{{ aluno.nome_completo }}" required>
         </div>
 
         <div class="form-group">
@@ -164,7 +172,8 @@
 
         <div class="form-group">
             <label>Telefone:</label>
-            <input class="telefone" style="max-width: 30%;" type="text" name="telefone" value="{{ aluno.telefone }}">
+            <input class="telefone" style="max-width: 30%;" type="text" name="telefone" maxlength="15"
+                value="{{ aluno.telefone }}">
         </div>
 
         <div class="form-group">
@@ -206,14 +215,47 @@
         </div>
 
         <div class="form-group">
-            <label>Camisa (tamanho):</label>
-            <input class="camisa" style="max-width: 50%;" type="text" name="camisa_tamanho" value="{{ aluno.camisa_tamanho }}">
+            <label for="camisa_tamanho">Camisa (tamanho):</label>
+            <select class="camisa form-control" style="max-width: 50%;" name="camisa_tamanho" id="camisa_tamanho">
+                <option value="" disabled {% if not aluno.camisa_tamanho %}selected{% endif %}>Selecione o tamanho
+                </option>
+                <optgroup label="Infantil">
+                    <option value="4" {% if aluno.camisa_tamanho=="4" %}selected{% endif %}>4 anos</option>
+                    <option value="6" {% if aluno.camisa_tamanho=="6" %}selected{% endif %}>6 anos</option>
+                    <option value="8" {% if aluno.camisa_tamanho=="8" %}selected{% endif %}>8 anos</option>
+                    <option value="10" {% if aluno.camisa_tamanho=="10" %}selected{% endif %}>10 anos</option>
+                    <option value="12" {% if aluno.camisa_tamanho=="12" %}selected{% endif %}>12 anos</option>
+                </optgroup>
+                <optgroup label="Adulto">
+                    <option value="PP" {% if aluno.camisa_tamanho=="PP" %}selected{% endif %}>PP: Extra Pequeno</option>
+                    <option value="P" {% if aluno.camisa_tamanho=="P" %}selected{% endif %}>P: Pequeno</option>
+                    <option value="M" {% if aluno.camisa_tamanho=="M" %}selected{% endif %}>M: Médio</option>
+                    <option value="G" {% if aluno.camisa_tamanho=="G" %}selected{% endif %}>G: Grande</option>
+                    <option value="GG" {% if aluno.camisa_tamanho=="GG" %}selected{% endif %}>GG: Extra Grande</option>
+                </optgroup>
+            </select>
         </div>
 
         <div class="form-group">
             <label>Calça (tamanho):</label>
-            <input class="calca" style="max-width: 50%;" type="text" name="calsa_tamanho" value="{{ aluno.calsa_tamanho }}">
+            <select class="calca form-control" style="max-width: 50%;" name="calsa_tamanho">
+                <option value="" disabled {% if not aluno.calsa_tamanho %}selected{% endif %}>Selecione o tamanho
+                </option>
+                <option value="34-PP" {% if aluno.calsa_tamanho=="34-PP" %}selected{% endif %}>34 (PP ou até menor)
+                </option>
+                <option value="36-P" {% if aluno.calsa_tamanho=="36-P" %}selected{% endif %}>36 (P)</option>
+                <option value="38-P/M" {% if aluno.calsa_tamanho=="38-P/M" %}selected{% endif %}>38 (entre P e M)
+                </option>
+                <option value="40-M" {% if aluno.calsa_tamanho=="40-M" %}selected{% endif %}>40 (M)</option>
+                <option value="42-M/G" {% if aluno.calsa_tamanho=="42-M/G" %}selected{% endif %}>42 (entre M e G)
+                </option>
+                <option value="44-G" {% if aluno.calsa_tamanho=="44-G" %}selected{% endif %}>44 (G)</option>
+                <option value="46-GG" {% if aluno.calsa_tamanho=="46-GG" %}selected{% endif %}>46 (GG)</option>
+                <option value="48-GG/Plus" {% if aluno.calsa_tamanho=="48-GG/Plus" %}selected{% endif %}>48 (entre GG e
+                    Plus Size)</option>
+            </select>
         </div>
+
 
         <div class="form-group">
             <label>Foto:</label>
@@ -233,7 +275,8 @@
 
         <div class="form-group">
             <label>Responsável:</label>
-            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel" value="{{ aluno.responsavel }}">
+            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel"
+                value="{{ aluno.responsavel }}">
         </div>
 
         <div class="form-group">
@@ -246,6 +289,17 @@
 
     <!-- Botão flutuante Voltar -->
     <a href="{{ url_for('index') }}" class="btn-flutuante-voltar">Voltar</a>
+
+    <script>
+        document.querySelectorAll('.telefone').forEach(function (input) {
+            input.addEventListener('input', function (e) {
+                let valor = e.target.value.replace(/\D/g, ''); // só números
+                valor = valor.replace(/^(\d{2})(\d)/g, '($1) $2'); // (21) ...
+                valor = valor.replace(/(\d{5})(\d{4})$/, '$1-$2'); // 90000-0000
+                e.target.value = valor;
+            });
+        });
+    </script>
 </body>
 
 </html>
