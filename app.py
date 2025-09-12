@@ -383,7 +383,7 @@ if __name__ == "__main__":
     # Cria tabela se não existir
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             nome_completo TEXT NOT NULL,
             apelido TEXT,
             idade TEXT NOT NULL,
@@ -405,4 +405,4 @@ if __name__ == "__main__":
     cursor.close()
     conn.close()
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
