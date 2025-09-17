@@ -46,19 +46,46 @@ def index():
         else:
             flash("Senha incorreta!")
 
-    # Verifica se o admin está logado
+    # Variáveis padrão
+    alunos = []
+    total_paginas = 0
+    total_alunos = 0
+    pagina = request.args.get("pagina", 1, type=int)  # ?pagina= no GET
+    por_pagina = 10
+
     if session.get("admin_logado"):
         conn = conectar_banco()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM usuarios ORDER BY id DESC")
+
+        # Contar total de alunos cadastrados
+        cursor.execute("SELECT COUNT(*) FROM usuarios")
+        total_alunos = cursor.fetchone()[0]
+
+        # Calcular total de páginas
+        total_paginas = (total_alunos + por_pagina - 1) // por_pagina  
+
+        # Buscar apenas os alunos da página atual
+        offset = (pagina - 1) * por_pagina
+        cursor.execute(
+            "SELECT * FROM usuarios ORDER BY id DESC LIMIT ? OFFSET ?",
+            (por_pagina, offset),
+        )
         alunos = cursor.fetchall()
+
         cursor.close()
         conn.close()
-    else:
-        alunos = []  # não mostramos os alunos se não estiver logado
 
-    return render_template("index.html", alunos=alunos, graduacoes=graduacoes)
+    return render_template(
+        "index.html",
+        alunos=alunos,
+        graduacoes=graduacoes,
+        pagina=pagina,
+        total_paginas=total_paginas,
+        total_alunos=total_alunos  # total geral
+    )
+
+
 
 @app.route("/logout")
 def logout():
