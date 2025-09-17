@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <title>Editar Aluno</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="static/img_base/favicon.png" type="image/PNG">
     <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: #121212;
@@ -13,10 +21,49 @@
             padding: 20px;
         }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            /* logo à esquerda, botão à direita */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 10px 20px;
+            /* respiro interno para mobile */
+            background-color: #1E1E1E;
+        }
+
+        .logo {
+            width: 60px;
+            display: block;
+            margin: 0;
+            /* remove o centralizar */
+        }
+
+        .btn-flutuante-deslogar {
+            background: linear-gradient(to right, #E52D8E, #FF6A00);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .btn-flutuante-deslogar:hover {
+            background: linear-gradient(to right, #FF6A00, #E52D8E);
+        }
+
         h1 {
             text-align: center;
             color: #8E2DE2;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            margin-top: 100px;
         }
 
         form {
@@ -147,6 +194,12 @@
 </head>
 
 <body>
+    <header>
+        <img class="logo" src="/static/img_base/logo.png" alt="Logo Capoeira no Coração">
+        {% if session.get('admin_logado') %}
+        <a href="{{ url_for('logout') }}" class="btn-flutuante-deslogar">Sair</a>
+        {% endif %}
+    </header>
     <h1>Editar Aluno</h1>
     <form method="POST" enctype="multipart/form-data">
 

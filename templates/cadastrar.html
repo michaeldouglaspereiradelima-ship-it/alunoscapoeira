@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <title>Cadastro de Usuário</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="static/img_base/favicon.png" type="image/PNG">
     <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: #121212;
@@ -13,10 +21,49 @@
             padding: 20px;
         }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            /* logo à esquerda, botão à direita */
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 10px 20px;
+            /* respiro interno para mobile */
+            background-color: #1E1E1E;
+        }
+
+        .logo {
+            width: 60px;
+            display: block;
+            margin: 0;
+            /* remove o centralizar */
+        }
+
+        .btn-flutuante-deslogar {
+            background: linear-gradient(to right, #E52D8E, #FF6A00);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .btn-flutuante-deslogar:hover {
+            background: linear-gradient(to right, #FF6A00, #E52D8E);
+        }
+
         h1 {
             text-align: center;
             color: #8E2DE2;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            margin-top: 100px;
         }
 
         form {
@@ -126,15 +173,19 @@
             .graduacao-atual {
                 max-width: 100% !important;
             }
+
             .camisa {
                 max-width: 70% !important;
             }
+
             .calca {
                 max-width: 80% !important;
             }
+
             .foto {
                 max-width: 92% !important;
             }
+
             .responsavel {
                 max-width: 92% !important;
             }
@@ -143,6 +194,12 @@
 </head>
 
 <body>
+    <header>
+        <img class="logo" src="/static/img_base/logo.png" alt="Logo Capoeira no Coração">
+        {% if session.get('admin_logado') %}
+        <a href="{{ url_for('logout') }}" class="btn-flutuante-deslogar">Sair</a>
+        {% endif %}
+    </header>
     <h1>Cadastro de Usuário</h1>
     <form method="POST" enctype="multipart/form-data">
 
@@ -209,7 +266,8 @@
 
         <div class="form-group">
             <label for="camisa_tamanho">Camisa (tamanho):</label>
-            <select class="camisa" style="max-width: 50%;" name="camisa_tamanho" id="camisa_tamanho" class="form-control">
+            <select class="camisa" style="max-width: 50%;" name="camisa_tamanho" id="camisa_tamanho"
+                class="form-control">
                 <option value="" selected disabled>Selecione o tamanho</option>
                 <optgroup label="Infantil">
                     <option value="4">4 anos</option>
@@ -262,7 +320,8 @@
 
         <div class="form-group">
             <label>Responsável:</label>
-            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel" placeholder="Nome do responsável">
+            <input class="responsavel" style="max-width: 70%;" type="text" name="responsavel"
+                placeholder="Nome do responsável">
         </div>
 
         <div class="form-group">

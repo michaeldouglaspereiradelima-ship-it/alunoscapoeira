@@ -1,0 +1,5 @@
+# Ignorar o banco de dados na raiz
+/database.db
+
+# Ignorar a pasta de fotos dentro de static
+/static/fotos/
